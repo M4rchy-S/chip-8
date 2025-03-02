@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <random>
 
 #define HEIGHT 32
 #define WIDTH 64
@@ -19,14 +20,21 @@ private:
 	uint16_t stack[16];
 
 	uint8_t *sp;
-	unsigned char display[HEIGHT][WIDTH];
+	uint8_t display[HEIGHT][WIDTH];
 
 	uint8_t delay_timer;
 	uint8_t sound_timer;
 
 	uint8_t key[16];
 
+	uint16_t I;
+
 	uint16_t file_stop;
+
+	bool running;
+	bool jmp_flag;
+
+	void execute_opcode(uint16_t code);
 
 public:
 
@@ -40,8 +48,6 @@ public:
 
 	bool load_file(const std::string &file_path);
 
-	void execute_opcode(uint16_t code);
-
 	unsigned char get_display(int x, int y);
 
 	bool update();
@@ -49,6 +55,8 @@ public:
 	void reset_data();
 
 	void reset_program();
+
+	void setKeyStatus(int i, int status);
 };
 
 #endif

@@ -1,4 +1,5 @@
 ﻿#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <nfd.h>
 #include "CHIP8.h"
 
@@ -12,11 +13,7 @@ std::string OpenFileDialog();
 int main()
 {
 
-    //if (chip.load_file("IBM.ch8") == false)
-    //if (chip.load_file("Chip8Picture.ch8") == false)
-    //if (chip.load_file("KeypadTest.ch8") == false)
-    //if (chip.load_file("Minimalgame.ch8") == false)
-    if (chip.load_file("RandomNumberTest.ch8") == false)
+    if (chip.load_file("Chip8Picture.ch8") == false)
     {
         std::cout << "Error to load a file" << std::endl;
         return -1;
@@ -50,8 +47,10 @@ int main()
 
                 if (chip.get_display(i, j) == 1)
                     rect.setFillColor(sf::Color(32, 42, 53));
+                    //rect.setFillColor(sf::Color(182, 124, 36));
                 else
                     rect.setFillColor(sf::Color(143, 145, 133));
+                    //rect.setFillColor(sf::Color(27, 30, 37));
 
                 rect.setPosition({i*TILE_SIZE, j*TILE_SIZE});
 
@@ -83,24 +82,24 @@ void handle_user_input()
 
     //  Main 16 input 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num1))
-        chip.setKeyStatus(0, 1);
-    else
-        chip.setKeyStatus(0, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num2))
         chip.setKeyStatus(1, 1);
     else
         chip.setKeyStatus(1, 0);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num3))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num2))
         chip.setKeyStatus(2, 1);
     else
         chip.setKeyStatus(2, 0);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num4))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num3))
         chip.setKeyStatus(3, 1);
     else
         chip.setKeyStatus(3, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num4))
+        chip.setKeyStatus(12, 1);
+    else
+        chip.setKeyStatus(12, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Q))
         chip.setKeyStatus(4, 1);
@@ -118,44 +117,44 @@ void handle_user_input()
         chip.setKeyStatus(6, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::R))
-        chip.setKeyStatus(7, 1);
-    else
-        chip.setKeyStatus(7, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
-        chip.setKeyStatus(8, 1);
-    else
-        chip.setKeyStatus(8, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
-        chip.setKeyStatus(9, 1);
-    else
-        chip.setKeyStatus(9, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
-        chip.setKeyStatus(10, 1);
-    else
-        chip.setKeyStatus(10, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F))
-        chip.setKeyStatus(11, 1);
-    else
-        chip.setKeyStatus(11, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Z))
-        chip.setKeyStatus(12, 1);
-    else
-        chip.setKeyStatus(12, 0);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::X))
         chip.setKeyStatus(13, 1);
     else
         chip.setKeyStatus(13, 0);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::C))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
+        chip.setKeyStatus(7, 1);
+    else
+        chip.setKeyStatus(7, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
+        chip.setKeyStatus(8, 1);
+    else
+        chip.setKeyStatus(8, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
+        chip.setKeyStatus(9, 1);
+    else
+        chip.setKeyStatus(9, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F))
         chip.setKeyStatus(14, 1);
     else
         chip.setKeyStatus(14, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Z))
+        chip.setKeyStatus(10, 1);
+    else
+        chip.setKeyStatus(10, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::X))
+        chip.setKeyStatus(0, 1);
+    else
+        chip.setKeyStatus(0, 0);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::C))
+        chip.setKeyStatus(11, 1);
+    else
+        chip.setKeyStatus(11, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::V))
         chip.setKeyStatus(15, 1);
@@ -166,7 +165,7 @@ void handle_user_input()
 
 std::string OpenFileDialog() {
     nfdchar_t* outPath = nullptr;
-    nfdfilteritem_t filterItem[1] = { { "Chip8 Roms", "ch8" } };
+    nfdfilteritem_t filterItem[2] = { { "Chip8 Roms", "ch8" } };
 
     if (NFD_OpenDialog(&outPath, filterItem, 1, NULL) == NFD_OKAY) {
         std::string filePath(outPath);

@@ -1,6 +1,6 @@
 #include "CHIP8.h"
 
-#define DEBUG
+//#define DEBUG
 
 CHIP8::CHIP8()
 {
@@ -70,10 +70,20 @@ bool CHIP8::load_file(const std::string& filename)
 		this->file_stop = size + 0x200;
 		file.seekg(0, std::ios::beg);
 		file.read(reinterpret_cast<char*>(&memory[0x200]), size);
+		
+		this->pc = 0x200;
 
+		printf("[+] Loaded CHIP-8 rom: %s (size %d bytes)\n", filename.c_str(), size);
 
 		return true;
 	}
+
+	this->running = false;
+	this->pc = 0x200;
+	this->file_stop = this->pc;
+
+	printf("[-] Failed to load CHIP-8 rom\n");
+
 	return false;
 }
 
@@ -102,10 +112,10 @@ void CHIP8::execute_opcode(uint16_t code)
 						Return from a subroutine.
 						The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
 					*/
+					this->sp -= 1;
 					this->pc = *this->sp;
 					*this->sp = 0x0000;
-					this->sp -= 1;
-					this->jmp_flag = true;
+					//this->jmp_flag = true;
 					;
 					break;
 			};
@@ -129,7 +139,7 @@ void CHIP8::execute_opcode(uint16_t code)
 			*/
 			*this->sp = this->pc;
 			this->sp += 1;
-			this->pc = code % 0x0FFF;
+			this->pc = code % 0x0FFF - 2;
 			this->jmp_flag = true;
 			break;
 		case 0x3000:
@@ -375,7 +385,7 @@ void CHIP8::execute_opcode(uint16_t code)
 						Skip next instruction if key with the value of Vx is pressed.
 						Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
 					*/
-					if (this->key[(code & 0x0F00) >> 8] == 1)
+					if (this->key[this->V[ (code & 0x0F00) >> 8] ] == 1)
 						this->pc += 2;
 					break;
 				case 0xE0A1:
@@ -385,7 +395,7 @@ void CHIP8::execute_opcode(uint16_t code)
 						Skip next instruction if key with the value of Vx is not pressed.
 						Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.
 					*/
-					if (this->key[(code & 0x0F00) >> 8] == 0)
+					if (this->key[this->V[(code & 0x0F00) >> 8] ] == 0)
 						this->pc += 2;
 					break;
 				default:
@@ -406,20 +416,31 @@ void CHIP8::execute_opcode(uint16_t code)
 					this->V[(code & 0x0F00) >> 8] = this->delay_timer;
 					break;
 				case 0xF00A:
-					printf("LD V%d, K", (code & 0x0F00) >> 8);
-					/*
-						Fx0A - LD Vx, K
-						Wait for a key press, store the value of the key in Vx.
-					*/
-					if (this->key[(code & 0x0F00) >> 8] == 1)
 					{
-						this->running = true;
-						this->V[(code & 0x0F00) >> 8] = this->key[(code & 0x0F00) >> 8];
-					}
-					else
-						this->running = false;
+						printf("LD V%d, K", (code & 0x0F00) >> 8);
+						/*
+							Fx0A - LD Vx, K
+							Wait for a key press, store the value of the key in Vx.
+						*/
+						bool flag = false;
 
-					break;
+						for (uint8_t i = 0; i < 16; i++)
+						{
+							if (key[i])
+							{
+								this->V[(code & 0x0F00) >> 8] = i;
+								this->running = true;
+								flag = true;
+								break;
+							}
+						}
+
+						if (flag)
+							break;
+						else
+							this->running = false;
+						break;
+					}
 				case 0xF015:
 					printf("LD DT, V%d", (code & 0x0F00) >> 8);
 					/*
@@ -519,13 +540,13 @@ void CHIP8::execute_opcode(uint16_t code)
 		printf("\n\n");
 	#endif 
 
-		if (this->running)
-		{
-			if (this->jmp_flag)
-				this->jmp_flag = false;
-			else
-				this->pc = this->pc + 2;
-		}
+	if (this->running)
+	{
+		if (this->jmp_flag)
+			this->jmp_flag = false;
+		else
+			this->pc = this->pc + 2;
+	}
 
 }
 
@@ -540,14 +561,21 @@ bool CHIP8::update()
 	if (this->pc >= this->file_stop)
 		return false;
 
+
 	uint16_t opcode = this->memory[this->pc] << 8 | this->memory[this->pc + 1];
 	this->execute_opcode(opcode);
 
 	if (this->delay_timer > 0)
+	{
+		std::this_thread::sleep_for(std::chrono::microseconds(5000));
 		this->delay_timer--;
+	}
+
 
 	if (this->sound_timer > 0)
 		this->sound_timer--;
+	
+	std::this_thread::sleep_for(std::chrono::nanoseconds(350));
 	
 	return true;
 }
@@ -566,7 +594,7 @@ void CHIP8::reset_program()
 	memset(this->key, 0, 16);
 	
 	this->pc = 0x200;
-	this->sp = (uint8_t*)this->stack;
+	this->sp = (uint16_t *)this->stack;
 	this->running = true;
 	this->jmp_flag = false;
 
@@ -575,4 +603,11 @@ void CHIP8::reset_program()
 void CHIP8::setKeyStatus(int i, int status)
 {
 	this->key[i] = status;
+}
+
+bool CHIP8::is_sound()
+{
+	if (this->sound_timer > 0)
+		return true;
+	return false;
 }

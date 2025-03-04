@@ -567,7 +567,7 @@ bool CHIP8::update()
 
 	if (this->delay_timer > 0)
 	{
-		std::this_thread::sleep_for(std::chrono::microseconds(5000));
+		std::this_thread::sleep_for(std::chrono::microseconds(1000));
 		this->delay_timer--;
 	}
 
@@ -575,7 +575,7 @@ bool CHIP8::update()
 	if (this->sound_timer > 0)
 		this->sound_timer--;
 	
-	std::this_thread::sleep_for(std::chrono::nanoseconds(350));
+	std::this_thread::sleep_for(std::chrono::nanoseconds(150));
 	
 	return true;
 }

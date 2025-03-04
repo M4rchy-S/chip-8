@@ -1,10 +1,24 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <nfd.h>
+
 #include "CHIP8.h"
+
+#include <vector>
+#include <chrono>
+#include <thread>
 
 CHIP8 chip;
 const unsigned int TILE_SIZE = 15;
+
+std::vector<std::vector<sf::Color>> colorPalette = 
+{ 
+    { sf::Color(32, 42, 53), sf::Color(143, 145, 133) },
+    { sf::Color(143, 145, 133), sf::Color(32, 42, 53) },
+    { sf::Color(182, 124, 36), sf::Color(27, 30, 37)  } 
+};
+
+unsigned short pallete_index = 0;
 
 void handle_user_input();
 
@@ -46,10 +60,12 @@ int main()
                 sf::RectangleShape rect({ TILE_SIZE, TILE_SIZE });
 
                 if (chip.get_display(i, j) == 1)
-                    rect.setFillColor(sf::Color(32, 42, 53));
+                    rect.setFillColor(colorPalette[pallete_index][0]);
+                    //rect.setFillColor(sf::Color(32, 42, 53));
                     //rect.setFillColor(sf::Color(182, 124, 36));
                 else
-                    rect.setFillColor(sf::Color(143, 145, 133));
+                    rect.setFillColor(colorPalette[pallete_index][1]);
+                    //rect.setFillColor(sf::Color(143, 145, 133));
                     //rect.setFillColor(sf::Color(27, 30, 37));
 
                 rect.setPosition({i*TILE_SIZE, j*TILE_SIZE});
@@ -76,9 +92,15 @@ void handle_user_input()
 
     //  Load program path
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F2))
-    {
         chip.load_file( OpenFileDialog() );
+
+    //  Change theme
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F3))
+    {
+        pallete_index = (pallete_index + 1) % colorPalette.size();
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
+
 
     //  Main 16 input 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Num1))

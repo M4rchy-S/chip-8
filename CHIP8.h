@@ -20,7 +20,7 @@ private:
 	uint16_t stack[16];
 
 	uint8_t *sp;
-	uint8_t display[HEIGHT][WIDTH];
+	uint8_t display[HEIGHT * WIDTH];
 
 	uint8_t delay_timer;
 	uint8_t sound_timer;
@@ -41,8 +41,6 @@ public:
 	CHIP8();
 
 	~CHIP8();
-
-	void clear_display();
 
 	void clear_memory();
 

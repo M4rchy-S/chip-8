@@ -5,14 +5,17 @@
 CHIP8::CHIP8()
 {
 	this->clear_memory();
-	this->clear_display();
+	this->reset_program();
+
+	/*
 	this->pc = 0x200;
 	this->sp = (uint8_t *) this->stack;
+	this->running = true;
+	this->jmp_flag = false;
+	*/
 
 	std::srand(std::time(nullptr));
 
-	this->running = true;
-	this->jmp_flag = false;
 }
 
 CHIP8::~CHIP8()
@@ -20,23 +23,15 @@ CHIP8::~CHIP8()
 
 }
 
-void CHIP8::clear_display()
-{
-	for (int i = 0; i < HEIGHT; i++)
-	{
-		for (int j = 0; j < WIDTH; j++)
-		{
-			this->display[i][j] = 0;
-		}
-	}
-}
-
 void CHIP8::clear_memory()
 {
 	memset(this->memory, 0, 4096);
+	/*
 	memset(this->V, 0, 16);
 	memset(this->stack, 0, 16);
 	memset(this->key, 0, 16);
+	memset(this->display, 0, WIDTH * HEIGHT);
+	*/
 
 	uint8_t sprites[80] = {
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -65,6 +60,9 @@ void CHIP8::clear_memory()
 
 bool CHIP8::load_file(const std::string& filename)
 {
+	this->clear_memory();
+	this->reset_program();
+
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
 	if (file.is_open())
 	{
@@ -95,7 +93,7 @@ void CHIP8::execute_opcode(uint16_t code)
 						Clear the display.
 					*/
 					
-					this->clear_display();
+					memset(this->display, 0, WIDTH * HEIGHT);
 					break;
 				case 0x00EE:
 					printf("RET");
@@ -353,10 +351,13 @@ void CHIP8::execute_opcode(uint16_t code)
 					{
 						if ((spriteByte & (0x80 >> col)) != 0)
 						{
-							if (this->display[xPos + col][yPos + row] == 1)
-								this->V[0xF] = 1;
+							uint16_t pixelIndex = (xPos + col) + ((yPos + row) * WIDTH);
 
-							this->display[xPos + col][yPos + row] = this->display[xPos + col][yPos + row] ^ 1;
+							if (this->display[pixelIndex] == 1) {
+								V[0xF] = 1; 
+							}
+
+							this->display[pixelIndex] ^= 1; 
 
 						}
 					}
@@ -390,7 +391,6 @@ void CHIP8::execute_opcode(uint16_t code)
 				default:
 					printf("unknown code\n");
 					break;
-
 			}
 			;
 			break;
@@ -501,7 +501,7 @@ void CHIP8::execute_opcode(uint16_t code)
 					break;
 					
 			}
-
+			break;
 		default: 
 			printf("unknown code\n");
 			break;
@@ -531,12 +531,8 @@ void CHIP8::execute_opcode(uint16_t code)
 
 uint8_t CHIP8::get_display(int x, int y)
 {
-	if (x > HEIGHT || x < 0)
-		return 0;
-	if (y > WIDTH || y < 0)
-		return 0;
 
-	return this->display[x][y];
+	return this->display[x + y * WIDTH];
 }
 
 bool CHIP8::update()
@@ -559,17 +555,21 @@ bool CHIP8::update()
 void CHIP8::reset_data()
 {
 	this->clear_memory();
-	this->clear_display();
 	this->pc = 0x200;
 }
 
 void CHIP8::reset_program()
 {
-	this->clear_display();
+	memset(this->display, 0, WIDTH * HEIGHT);
 	memset(this->V, 0, 16);
 	memset(this->stack, 0, 16);
 	memset(this->key, 0, 16);
+	
 	this->pc = 0x200;
+	this->sp = (uint8_t*)this->stack;
+	this->running = true;
+	this->jmp_flag = false;
+
 }
 
 void CHIP8::setKeyStatus(int i, int status)

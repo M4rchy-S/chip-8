@@ -3,20 +3,20 @@
 CHIP-8 is an interpreted programming language and Virtual Machine. 
 Community started using CHIP-8 in the 1970s for many electronic devices, such as computers, video game consoles, mobile phones. 
 
-Main purpose of Virtual Machine was creating and adapting games and programs for various different platforms. 
+The main purpose of Virtual Machine was creating and adapting games and programs for various different platforms. 
 
-This program emulates only original CHIP-8 standart.
+This program emulates only the original CHIP-8 standard.
 
 
 <h2>Usage</h2>
-F1 - Reaload program <br>
+F1 - Reload program <br>
 F2 - Load ROM (.ch8 format) <br>
 F3 - Change color palette <br><br>
 
 > Games and programs can be found in 'roms' folder
 
 <h2>Virtual Key Mapping</h2>
-CHIP-8 is using 16 virtual keys. For emulations they were changed to QWERTY layout.
+CHIP-8 is using 16 virtual keys. For emulations, they were changed to QWERTY layout.
 
 <code>
  1 2 3 C              1 2 3 4
@@ -26,7 +26,7 @@ CHIP-8 is using 16 virtual keys. For emulations they were changed to QWERTY layo
 </code>
 
 <h2>Reference Links</h2>
-Massubg    = https://massung.github.io/CHIP-8 <br>
+Massung    = https://massung.github.io/CHIP-8 <br>
 trapexit   = https://github.com/trapexit/chip-8_documentation <br>
 devernay   = http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.1 <br>
 Wikipedia  = https://en.wikipedia.org/wiki/CHIP-8 <br>

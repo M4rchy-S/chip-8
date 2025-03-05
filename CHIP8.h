@@ -38,13 +38,15 @@ private:
 
 	void execute_opcode(uint16_t code);
 
+	void clear_memory();
+
+	void reset_data();
+
 public:
 
 	CHIP8();
 
 	~CHIP8();
-
-	void clear_memory();
 
 	bool load_file(const std::string &file_path);
 
@@ -52,13 +54,9 @@ public:
 
 	bool update();
 
-	void reset_data();
-
-	void reset_program();
-
 	void setKeyStatus(int i, int status);
 
-	bool is_sound();
+	void reset_program();
 };
 
 #endif

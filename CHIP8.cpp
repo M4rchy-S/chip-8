@@ -7,13 +7,6 @@ CHIP8::CHIP8()
 	this->clear_memory();
 	this->reset_program();
 
-	/*
-	this->pc = 0x200;
-	this->sp = (uint8_t *) this->stack;
-	this->running = true;
-	this->jmp_flag = false;
-	*/
-
 	std::srand(std::time(nullptr));
 
 }
@@ -26,12 +19,6 @@ CHIP8::~CHIP8()
 void CHIP8::clear_memory()
 {
 	memset(this->memory, 0, 4096);
-	/*
-	memset(this->V, 0, 16);
-	memset(this->stack, 0, 16);
-	memset(this->key, 0, 16);
-	memset(this->display, 0, WIDTH * HEIGHT);
-	*/
 
 	uint8_t sprites[80] = {
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -115,7 +102,6 @@ void CHIP8::execute_opcode(uint16_t code)
 					this->sp -= 1;
 					this->pc = *this->sp;
 					*this->sp = 0x0000;
-					//this->jmp_flag = true;
 					;
 					break;
 			};
@@ -238,7 +224,6 @@ void CHIP8::execute_opcode(uint16_t code)
 						The values of Vx and Vy are added together. If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0. Only the lowest 8 bits of the result are kept, and stored in Vx.
 					*/
 
-					//uint16_t temp = this->V[(code & 0x0F00) >> 8] + this->V[(code & 0x00F0) >> 4];
 					if (this->V[(code & 0x0F00) >> 8] + this->V[(code & 0x00F0) >> 4] > 255)
 						this->V[0xF] = 1;
 					this->V[(code & 0x0F00) >> 8] = this->V[(code & 0x0F00) >> 8] + this->V[(code & 0x00F0) >> 4] & 0xFFFF;
@@ -605,9 +590,4 @@ void CHIP8::setKeyStatus(int i, int status)
 	this->key[i] = status;
 }
 
-bool CHIP8::is_sound()
-{
-	if (this->sound_timer > 0)
-		return true;
-	return false;
-}
+

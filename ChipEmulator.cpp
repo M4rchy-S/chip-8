@@ -26,12 +26,12 @@ std::string OpenFileDialog();
 
 int main()
 {
-
     if (chip.load_file("Chip8Picture.ch8") == false)
     {
         std::cout << "Error to load a file" << std::endl;
         return -1;
     }
+
 
     sf::RenderWindow window(sf::VideoMode({ TILE_SIZE * WIDTH, TILE_SIZE * HEIGHT}), "CHIP-8 Emulator");
 
@@ -61,12 +61,8 @@ int main()
 
                 if (chip.get_display(i, j) == 1)
                     rect.setFillColor(colorPalette[pallete_index][0]);
-                    //rect.setFillColor(sf::Color(32, 42, 53));
-                    //rect.setFillColor(sf::Color(182, 124, 36));
                 else
                     rect.setFillColor(colorPalette[pallete_index][1]);
-                    //rect.setFillColor(sf::Color(143, 145, 133));
-                    //rect.setFillColor(sf::Color(27, 30, 37));
 
                 rect.setPosition({i*TILE_SIZE, j*TILE_SIZE});
 
@@ -88,11 +84,17 @@ void handle_user_input()
 
     //  Restart program
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F1))
+    {
         chip.reset_program();
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    }
 
     //  Load program path
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F2))
+    {
         chip.load_file( OpenFileDialog() );
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    }
 
     //  Change theme
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F3))

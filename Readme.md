@@ -13,7 +13,7 @@ F1 - Reload program <br>
 F2 - Load ROM (.ch8 format) <br>
 F3 - Change color palette <br><br>
 
-> Games and programs can be found in 'roms' folder
+> Games and programs can be found in 'chip8-roms' folder
 
 <h2>Virtual Key Mapping</h2>
 CHIP-8 is using 16 virtual keys. For emulations, they were changed to QWERTY layout.
